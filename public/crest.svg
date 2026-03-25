@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" aria-hidden="true">
+  <circle cx="80" cy="80" r="76" stroke="#fff" stroke-width="4" opacity="0.95"/>
+  <text
+    x="80"
+    y="92"
+    text-anchor="middle"
+    fill="#fff"
+    font-family="system-ui, Arial, sans-serif"
+    font-size="36"
+    font-weight="800"
+    letter-spacing="-0.02em"
+  >
+    SCI
+  </text>
+</svg>
