@@ -13,6 +13,4 @@ export type Offer = {
   treatmentId?: string;
   /** API `conversation_id` */
   conversationId?: string;
-  /** API `subject_id` on the offer (if present) */
-  subjectId?: string;
 };

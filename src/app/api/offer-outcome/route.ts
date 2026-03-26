@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { resolveCustomer } from "@/data/customers";
 import { buildOfferOutcomePayload } from "@/lib/buildOfferOutcomePayload";
 import { fetchWithUpstreamService } from "@/lib/serviceClient";
 import { readEnv } from "@/lib/readEnv";
@@ -60,12 +61,14 @@ export async function POST(request: Request) {
     );
   }
 
-  const payload = buildOfferOutcomePayload(o, outcome as OfferOutcome, customerId);
+  const customer = resolveCustomer(customerId);
+  const payload = buildOfferOutcomePayload(o, outcome as OfferOutcome, customer);
   const requestBodyJson = JSON.stringify(payload);
 
   logInfo("api/offer-outcome", "POST to upstream", {
     outcome,
-    customerId,
+    requestedCustomerId: customerId,
+    resolvedCustomerId: customer.id,
     url,
     requestBody: payload,
   });
@@ -99,7 +102,7 @@ export async function POST(request: Request) {
       ok: res.ok,
       status: res.status,
       outcome,
-      customerId,
+      customerId: customer.id,
       upstreamBody: parsed,
     });
   } catch (e) {

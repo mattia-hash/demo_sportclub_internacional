@@ -5,6 +5,10 @@ import { buildOffersRequestBody } from "@/lib/offersRequestBody";
 import { fetchWithUpstreamService } from "@/lib/serviceClient";
 import { logError, logInfo } from "@/lib/serverLog";
 
+/** Avoid stale cached responses; allow slow upstream on platforms that honor this (e.g. Vercel). */
+export const dynamic = "force-dynamic";
+export const maxDuration = 300;
+
 function isFullHttpUrl(s: string): boolean {
   return /^https?:\/\//i.test(s.trim());
 }

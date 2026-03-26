@@ -26,7 +26,14 @@ function pickOffer(raw: Record<string, unknown>, index: number): Offer | null {
             : typeof raw.headline === "string"
               ? raw.headline
               : null;
-  if (!title) return null;
+  const resolvedTitle =
+    title ??
+    (typeof raw.offer_id === "string"
+      ? raw.offer_id
+      : typeof raw.id === "string"
+        ? raw.id
+        : `Oferta ${index + 1}`);
+  if (!resolvedTitle.trim()) return null;
 
   const headline =
     typeof raw.offer_headline === "string" ? raw.offer_headline : undefined;
@@ -66,12 +73,10 @@ function pickOffer(raw: Record<string, unknown>, index: number): Offer | null {
     typeof raw.treatment_id === "string" ? raw.treatment_id : undefined;
   const conversationId =
     typeof raw.conversation_id === "string" ? raw.conversation_id : undefined;
-  const subjectId =
-    typeof raw.subject_id === "string" ? raw.subject_id : undefined;
 
   return {
     id,
-    title,
+    title: resolvedTitle,
     subtitle,
     headline,
     imageUrl,
@@ -79,7 +84,6 @@ function pickOffer(raw: Record<string, unknown>, index: number): Offer | null {
     offerCode,
     treatmentId,
     conversationId,
-    subjectId,
   };
 }
 

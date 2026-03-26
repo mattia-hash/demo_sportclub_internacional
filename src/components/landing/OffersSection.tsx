@@ -16,40 +16,50 @@ export function OffersSection({ customerId }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    const ac = new AbortController();
     async function load() {
       setLoading(true);
       setError(null);
       try {
         const qs = new URLSearchParams({ customer_id: customerId });
-        const res = await fetch(`/api/offers?${qs.toString()}`);
+        const res = await fetch(`/api/offers?${qs.toString()}`, {
+          cache: "no-store",
+          signal: ac.signal,
+        });
         const json = (await res.json()) as {
           ok?: boolean;
+          status?: number;
           body?: unknown;
           error?: string;
         };
         if (!res.ok) {
           throw new Error(json.error ?? `Erro ${res.status}`);
         }
+        if (json.ok === false) {
+          const detail =
+            typeof json.error === "string"
+              ? json.error
+              : json.status != null
+                ? `Serviço retornou status ${json.status}`
+                : "Serviço indisponível";
+          throw new Error(detail);
+        }
         const normalized = normalizeOffers(json);
-        if (!cancelled) {
-          setOffers(normalized);
-        }
+        setOffers(normalized);
       } catch (e) {
-        if (!cancelled) {
-          setError(e instanceof Error ? e.message : String(e));
-          setOffers([]);
+        if (e instanceof Error && e.name === "AbortError") {
+          return;
         }
+        setError(e instanceof Error ? e.message : String(e));
+        setOffers([]);
       } finally {
-        if (!cancelled) {
+        if (!ac.signal.aborted) {
           setLoading(false);
         }
       }
     }
     load();
-    return () => {
-      cancelled = true;
-    };
+    return () => ac.abort();
   }, [customerId]);
 
   return (
