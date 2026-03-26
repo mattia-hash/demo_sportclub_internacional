@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OfferCard } from "@/components/landing/OfferCard";
 import { normalizeOffers } from "@/lib/normalizeOffers";
 import type { Offer } from "@/types/offer";
@@ -14,8 +14,11 @@ export function OffersSection({ customerId }: Props) {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  /** Bumps on effect cleanup so we never skip setLoading(false) for the active fetch (e.g. React Strict Mode aborts the first in-flight request). */
+  const loadGenerationRef = useRef(0);
 
   useEffect(() => {
+    const myGeneration = ++loadGenerationRef.current;
     const ac = new AbortController();
     async function load() {
       setLoading(true);
@@ -45,21 +48,28 @@ export function OffersSection({ customerId }: Props) {
           throw new Error(detail);
         }
         const normalized = normalizeOffers(json);
-        setOffers(normalized);
+        if (myGeneration === loadGenerationRef.current) {
+          setOffers(normalized);
+        }
       } catch (e) {
         if (e instanceof Error && e.name === "AbortError") {
           return;
         }
-        setError(e instanceof Error ? e.message : String(e));
-        setOffers([]);
+        if (myGeneration === loadGenerationRef.current) {
+          setError(e instanceof Error ? e.message : String(e));
+          setOffers([]);
+        }
       } finally {
-        if (!ac.signal.aborted) {
+        if (myGeneration === loadGenerationRef.current) {
           setLoading(false);
         }
       }
     }
     load();
-    return () => ac.abort();
+    return () => {
+      ac.abort();
+      loadGenerationRef.current += 1;
+    };
   }, [customerId]);
 
   return (
