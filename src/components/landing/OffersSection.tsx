@@ -5,7 +5,11 @@ import { normalizeOffers } from "@/lib/normalizeOffers";
 import type { Offer } from "@/types/offer";
 import styles from "./OffersSection.module.css";
 
-export function OffersSection() {
+type Props = {
+  customerId: string;
+};
+
+export function OffersSection({ customerId }: Props) {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +20,8 @@ export function OffersSection() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/offers");
+        const qs = new URLSearchParams({ customer_id: customerId });
+        const res = await fetch(`/api/offers?${qs.toString()}`);
         const json = (await res.json()) as {
           ok?: boolean;
           body?: unknown;
@@ -44,7 +49,7 @@ export function OffersSection() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [customerId]);
 
   return (
     <section className={styles.section} aria-labelledby="offers-heading">
@@ -89,9 +94,14 @@ export function OffersSection() {
                     {offer.subtitle ? (
                       <p className={styles.cardSub}>{offer.subtitle}</p>
                     ) : null}
-                    <a className={styles.cta} href="#">
-                      {offer.ctaLabel ?? "Aproveitar"}
-                    </a>
+                    <div className={styles.actions}>
+                      <button type="button" className={styles.acceptBtn}>
+                        Aceitar
+                      </button>
+                      <button type="button" className={styles.rejectBtn}>
+                        Nao tenho interesse
+                      </button>
+                    </div>
                   </div>
                 </article>
               </li>

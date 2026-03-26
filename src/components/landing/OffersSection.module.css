@@ -126,20 +126,38 @@
   flex: 1;
 }
 
-.cta {
-  display: inline-block;
-  align-self: flex-start;
-  margin-top: 0.5rem;
-  padding: 0.55rem 1.1rem;
-  border-radius: 0.5rem;
-  background: #c8102e;
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  transition: background 0.2s ease;
+.actions {
+  margin-top: 0.6rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.cta:hover {
+.acceptBtn,
+.rejectBtn {
+  border-radius: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.52rem 0.9rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.acceptBtn {
+  background: #c8102e;
+  color: #fff;
+}
+
+.acceptBtn:hover {
   background: #a00d25;
+}
+
+.rejectBtn {
+  background: #fff;
+  color: #555;
+  border-color: #d0d0d0;
+}
+
+.rejectBtn:hover {
+  border-color: #9d9d9d;
 }

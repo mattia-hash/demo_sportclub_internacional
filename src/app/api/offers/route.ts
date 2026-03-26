@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { OFFERS_REQUEST_PAYLOAD } from "@/config/offers";
+import { resolveCustomer } from "@/data/customers";
 import { getOffersUpstreamUrl } from "@/lib/offersUpstreamUrl";
+import { buildOffersRequestBody } from "@/lib/offersRequestBody";
 import { fetchWithUpstreamService } from "@/lib/serviceClient";
 import { logError, logInfo } from "@/lib/serverLog";
 
@@ -8,7 +9,12 @@ function isFullHttpUrl(s: string): boolean {
   return /^https?:\/\//i.test(s.trim());
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const requestedCustomerId = searchParams.get("customer_id")?.trim() || "1";
+  const customer = resolveCustomer(requestedCustomerId);
+  const customerId = customer.id;
+
   const offerUrl = getOffersUpstreamUrl();
 
   if (!offerUrl) {
@@ -25,10 +31,12 @@ export async function GET() {
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });
   }
 
-  const requestBodyJson = JSON.stringify(OFFERS_REQUEST_PAYLOAD);
+  const payload = buildOffersRequestBody(customer.id);
+  const requestBodyJson = JSON.stringify(payload);
   logInfo("api/offers", "POST to upstream", {
+    customerId,
     url: offerUrl,
-    requestBody: OFFERS_REQUEST_PAYLOAD,
+    requestBody: payload,
     requestBodyJson,
   });
 
@@ -91,6 +99,7 @@ export async function GET() {
       ok: res.ok,
       status: res.status,
       url: offerUrl,
+      customerId,
       body,
     });
   } catch (e) {
