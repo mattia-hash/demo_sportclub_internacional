@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { OfferCard } from "@/components/landing/OfferCard";
 import { normalizeOffers } from "@/lib/normalizeOffers";
 import type { Offer } from "@/types/offer";
 import styles from "./OffersSection.module.css";
@@ -73,37 +74,8 @@ export function OffersSection({ customerId }: Props) {
         ) : (
           <ul className={styles.grid}>
             {offers.map((offer) => (
-              <li key={offer.id}>
-                <article className={styles.card}>
-                  <div className={styles.media}>
-                    {offer.imageUrl ? (
-                      <img
-                        src={offer.imageUrl}
-                        alt={offer.title}
-                        className={styles.img}
-                      />
-                    ) : (
-                      <div className={styles.mediaPlaceholder} aria-hidden="true" />
-                    )}
-                  </div>
-                  <div className={styles.cardBody}>
-                    <h3 className={styles.cardTitle}>{offer.title}</h3>
-                    {offer.headline && offer.headline !== offer.title ? (
-                      <p className={styles.cardHeadline}>{offer.headline}</p>
-                    ) : null}
-                    {offer.subtitle ? (
-                      <p className={styles.cardSub}>{offer.subtitle}</p>
-                    ) : null}
-                    <div className={styles.actions}>
-                      <button type="button" className={styles.acceptBtn}>
-                        Aceitar
-                      </button>
-                      <button type="button" className={styles.rejectBtn}>
-                        Nao tenho interesse
-                      </button>
-                    </div>
-                  </div>
-                </article>
+              <li key={offer.id} className={styles.gridItem}>
+                <OfferCard offer={offer} customerId={customerId} />
               </li>
             ))}
           </ul>

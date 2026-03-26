@@ -7,4 +7,12 @@ export type Offer = {
   headline?: string;
   imageUrl?: string;
   ctaLabel?: string;
+  /** API `offer_code` */
+  offerCode?: string;
+  /** API `treatment_id` */
+  treatmentId?: string;
+  /** API `conversation_id` */
+  conversationId?: string;
+  /** API `subject_id` on the offer (if present) */
+  subjectId?: string;
 };

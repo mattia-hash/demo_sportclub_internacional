@@ -60,7 +60,27 @@ function pickOffer(raw: Record<string, unknown>, index: number): Offer | null {
           ? raw.cta
           : undefined;
 
-  return { id, title, subtitle, headline, imageUrl, ctaLabel };
+  const offerCode =
+    typeof raw.offer_code === "string" ? raw.offer_code : undefined;
+  const treatmentId =
+    typeof raw.treatment_id === "string" ? raw.treatment_id : undefined;
+  const conversationId =
+    typeof raw.conversation_id === "string" ? raw.conversation_id : undefined;
+  const subjectId =
+    typeof raw.subject_id === "string" ? raw.subject_id : undefined;
+
+  return {
+    id,
+    title,
+    subtitle,
+    headline,
+    imageUrl,
+    ctaLabel,
+    offerCode,
+    treatmentId,
+    conversationId,
+    subjectId,
+  };
 }
 
 /**
